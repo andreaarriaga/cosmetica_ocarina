@@ -16,6 +16,7 @@ rm(list = ls())
 # setup
 library(readxl)
 library(magrittr)
+library(dplyr)
 
 # setwd("/home/andrea/Documentos/cosmetica_ocarina") # Andre
 # setwd("Documentos/cosmetica_ocarina") # Sebas
@@ -33,10 +34,58 @@ recetas <- read_excel(paste0(raw_locale, "Recetas.xlsx"))
 
 # definiendo la clase correcta para las columnas
 bitacora$fecha %<>% as.Date()
+```
 
 
-# generando lista de precios de los ingredientes usados
-precios_receta <- precios[precios$articulo %in% receta$articulo, ]
+```{r precios}
+# generando lista de precios de los articulos usados
+# filtrando los articulos usados en la receta
+precio_articulos <- articulos[articulos$articulo %in% recetas$articulo, ]
+
+# seleccionando la fila que tiene el precio mas alto para cada ingrediente 
+precio_articulos <- aggregate(precio_u ~ articulo + categoria, FUN = max, data = precio_articulos)
+
+# generando el precio para cada receta
+# agregando a las recetas el precio por unidad de cada articulo
+precio_recetas <- recetas %>% left_join(precio_articulos)
+precio_recetas$precio_u %<>% as.numeric()
+
+# precio por ingrediente segun la cantidad usada 
+precio_articulos_bitacora <- bitacora %>% left_join(precio_recetas)
+precio_lote_ingredientes <- precio_articulos_bitacora[precio_articulos_bitacora$categoria == "ingrediente",]
+precio_lote_ingredientes$precio_u %<>% as.numeric()
+# precio_lote_ingredientes$precio <- precio_lote_ingredientes$cantidad * precio_lote_ingredientes$dimension_lote * precio_lote_ingredientes$precio_u
+
+# calculando el precio total de los ingredientes de cada lote
+precio_lote_ingredientes <- aggregate(precio ~ lote + receta + dimension_lote + categoria, FUN = sum, data = precio_lote_ingredientes)
+
+# empaque y otros
+precio_lote_empaque <- precio_articulos_bitacora[!precio_articulos_bitacora$categoria == "ingrediente", ]
+precio_lote_empaque$precio_u %<>% as.numeric()
+# precio_lote_empaque$precio <- precio_lote_empaque$dimension_lote * precio_lote_empaque$cantidad_productos * precio_lote_empaque$precio_u
+
+# calculando el precio total de los empaques de cada lote
+precio_lote_empaque <- aggregate(precio ~ lote + receta + dimension_lote + categoria, FUN = sum, data = precio_lote_empaque)
+
+# uniendo el precio de los ingredientes con los empaques y otros
+precio_lote <- precio_lote_ingredientes %<>% rbind(precio_lote_empaque)
+precio_lote <- aggregate(precio ~ lote + receta + dimension_lote + categoria, FUN = sum, data = precio_lote)
+
+# calculando el precio de cada gramo
+precio_lote$precio_gramo <- precio_lote$precio/precio_lote$dimension_lote
+
+
+```
+
+```{r articulos disponibles}
+# generando base articulos_disponibles
+# filtrando los agotados
+articulos_disponibles <- articulos[!articulos$estado == "agotado",]
+
+# sumando todo lo que hay por ingrediente
+articulos_disponibles <- aggregate(cantidad ~ articulo, FUN = sum, data = articulos_disponibles)
+
+# restandoles las cantidades usadas en las recetas
 
 
 ```
