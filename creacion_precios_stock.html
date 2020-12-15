@@ -11,7 +11,7 @@
 
 <meta name="author" content="Andrea Arriaga-Madrigal y Sebastián Mena" />
 
-<meta name="date" content="2020-12-11" />
+<meta name="date" content="2020-12-15" />
 
 <title>Calculos</title>
 
@@ -2792,13 +2792,18 @@ div.tocify {
 
 <h1 class="title toc-ignore">Calculos</h1>
 <h4 class="author">Andrea Arriaga-Madrigal y Sebastián Mena</h4>
-<h4 class="date">2020-12-11</h4>
+<h4 class="date">2020-12-15</h4>
 
 </div>
 
 
 <p> </p>
-<p>Objetivo del código: Actualizar las materias primas disponibles de acuerdo con el gasto que se genera en el documento de bitácora</p>
+<p>Objetivo del código:</p>
+<ul>
+<li>Calcular los precios de los lotes realizados<br />
+</li>
+<li>Actualizar las materias primas disponibles de acuerdo con el gasto que se genera en el documento de bitácora</li>
+</ul>
 <p> </p>
 <div id="precios" class="section level2">
 <h2>Precios</h2>
@@ -2813,7 +2818,7 @@ div.tocify {
 Cuadro 1. Precio de cada lote.
 <div data-pagedtable="false">
 <script data-pagedtable-source type="application/json">
-{"columns":[{"label":["lote"],"name":[1],"type":["chr"],"align":["left"]},{"label":["receta"],"name":[2],"type":["chr"],"align":["left"]},{"label":["dimension_lote"],"name":[3],"type":["dbl"],"align":["right"]},{"label":["categoria"],"name":[4],"type":["chr"],"align":["left"]},{"label":["precio"],"name":[5],"type":["dbl"],"align":["right"]}],"data":[{"1":"1_balsamos","2":"balsamo_alivia_2","3":"1750","4":"empaque","5":"30000.00"},{"1":"1_balsamos","2":"balsamo_alivia_2","3":"1750","4":"ingrediente","5":"22968.38"},{"1":"1","2":"jabon_menta_2","3":"6890","4":"ingrediente","5":"43316.24"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+{"columns":[{"label":["lote"],"name":[1],"type":["chr"],"align":["left"]},{"label":["receta"],"name":[2],"type":["chr"],"align":["left"]},{"label":["dimension_lote"],"name":[3],"type":["dbl"],"align":["right"]},{"label":["precio"],"name":[4],"type":["dbl"],"align":["right"]}],"data":[{"1":"1_balsamos","2":"balsamo_alivia_2","3":"1750","4":"52937.20"},{"1":"1_jabon","2":"jabon_menta_2","3":"6890","4":"43517.21"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
   </script>
 </div>
 </div>
@@ -2822,7 +2827,7 @@ Cuadro 1. Precio de cada lote.
 Cuadro 2. Articulos disponibles.
 <div data-pagedtable="false">
 <script data-pagedtable-source type="application/json">
-{"columns":[{"label":["articulo"],"name":[1],"type":["chr"],"align":["left"]},{"label":["categoria"],"name":[2],"type":["chr"],"align":["left"]},{"label":["cantidad_gastada"],"name":[3],"type":["dbl"],"align":["right"]},{"label":["cantidad"],"name":[4],"type":["dbl"],"align":["right"]},{"label":["cantidad_disponible"],"name":[5],"type":["dbl"],"align":["right"]}],"data":[{"1":"aceite_de_coco","2":"ingrediente","3":"1982.08001","4":"4435.00","5":"2452.91999"},{"1":"aceite_de_oliva","2":"ingrediente","3":"2857.85984","4":"4000.00","5":"1142.14016"},{"1":"ae_clavo","2":"ingrediente","3":"14.06752","4":"NA","5":"NA"},{"1":"ae_lavanda","2":"ingrediente","3":"14.06752","4":"179.15","5":"165.08248"},{"1":"ae_menta","2":"ingrediente","3":"212.75590","4":"NA","5":"NA"},{"1":"ae_romero","2":"ingrediente","3":"14.06752","4":"NA","5":"NA"},{"1":"agua_destilada","2":"ingrediente","3":"1474.13954","4":"7570.00","5":"6095.86046"},{"1":"arcilla_kaolin","2":"ingrediente","3":"179.46047","4":"1000.00","5":"820.53953"},{"1":"cera_de_abejas","2":"ingrediente","3":"253.21543","4":"474.00","5":"220.78457"},{"1":"cera_de_carnauba","2":"ingrediente","3":"112.54019","4":"1000.00","5":"887.45981"},{"1":"hidroxido_de_sodio","2":"ingrediente","3":"576.83721","4":"2000.00","5":"1423.16279"},{"1":"manteca_de_cacao","2":"ingrediente","3":"281.35048","4":"NA","5":"NA"},{"1":"manteca_de_karite","2":"ingrediente","3":"638.73432","4":"1746.00","5":"1107.26568"},{"1":"vitamina_e","2":"ingrediente","3":"28.13505","4":"120.00","5":"91.86495"},{"1":"etiqueta","2":"empaque","3":"75.00000","4":"NA","5":"NA"},{"1":"tubos_de_carton","2":"empaque","3":"25.00000","4":"NA","5":"NA"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+{"columns":[{"label":["articulo"],"name":[1],"type":["chr"],"align":["left"]},{"label":["categoria"],"name":[2],"type":["chr"],"align":["left"]},{"label":["cantidad_gastada"],"name":[3],"type":["dbl"],"align":["right"]},{"label":["cantidad"],"name":[4],"type":["dbl"],"align":["right"]},{"label":["cantidad_disponible"],"name":[5],"type":["dbl"],"align":["right"]}],"data":[{"1":"aceite_de_coco","2":"ingrediente","3":"1978.58001","4":"1568","5":"-410.58001"},{"1":"aceite_de_oliva","2":"ingrediente","3":"2857.85984","4":"1608","5":"-1249.85984"},{"1":"ae_clavo","2":"ingrediente","3":"14.06752","4":"30","5":"15.93248"},{"1":"ae_lavanda","2":"ingrediente","3":"14.06752","4":"130","5":"115.93248"},{"1":"ae_menta","2":"ingrediente","3":"212.75590","4":"NA","5":"NA"},{"1":"ae_romero","2":"ingrediente","3":"14.06752","4":"30","5":"15.93248"},{"1":"agua_destilada","2":"ingrediente","3":"1474.13954","4":"2828","5":"1353.86046"},{"1":"arcilla_kaolin","2":"ingrediente","3":"179.46047","4":"200","5":"20.53953"},{"1":"cera_de_abejas","2":"ingrediente","3":"253.21543","4":"985","5":"731.78457"},{"1":"cera_de_carnauba","2":"ingrediente","3":"112.54019","4":"848","5":"735.45981"},{"1":"hidroxido_de_sodio","2":"ingrediente","3":"576.83721","4":"155","5":"-421.83721"},{"1":"maica_aquamarine","2":"ingrediente","3":"3.50000","4":"3","5":"-0.50000"},{"1":"manteca_de_cacao","2":"ingrediente","3":"281.35048","4":"NA","5":"NA"},{"1":"manteca_de_karite","2":"ingrediente","3":"638.73432","4":"628","5":"-10.73432"},{"1":"vitamina_e","2":"ingrediente","3":"28.13505","4":"NA","5":"NA"},{"1":"etiqueta_balsamo","2":"empaque","3":"25.00000","4":"NA","5":"NA"},{"1":"etiqueta_jabon","2":"empaque","3":"75.00000","4":"NA","5":"NA"},{"1":"tubos_de_carton","2":"empaque","3":"25.00000","4":"25","5":"0.00000"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
   </script>
 </div>
 </div>

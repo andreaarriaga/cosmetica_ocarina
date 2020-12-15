@@ -16,7 +16,10 @@ editor_options:
 
 &nbsp;
 
-Objetivo del código: Actualizar las materias primas disponibles de acuerdo con el gasto que se genera en el documento de bitácora
+Objetivo del código:  
+
+ * Calcular los precios de los lotes realizados  
+ * Actualizar las materias primas disponibles de acuerdo con el gasto que se genera en el documento de bitácora  
 
 
 &nbsp;
@@ -49,8 +52,8 @@ setwd("/home/andrea/Documentos/cosmetica_ocarina") # Andre
 # llamando los datos
 raw_locale <- "data/raw/"
 articulos <- read_excel(paste0(raw_locale, "Materias_primas.xlsx"), sheet = "articulos")
-bitacora <- read_excel(paste0(raw_locale, "Bitacora.xlsx"))
-recetas <- read_excel(paste0(raw_locale, "Recetas.xlsx"))
+bitacora  <- read_excel(paste0(raw_locale, "Bitacora.xlsx"))
+recetas   <- read_excel(paste0(raw_locale, "Recetas.xlsx"))
 
 # definiendo la clase correcta para las columnas
 bitacora$fecha %<>% as.Date()
@@ -74,22 +77,28 @@ precio_recetas$precio_u %<>% as.numeric()
 precio_articulos_bitacora <- bitacora %>% left_join(precio_recetas)
 precio_lote_ingredientes <- precio_articulos_bitacora[precio_articulos_bitacora$categoria == "ingrediente",]
 precio_lote_ingredientes$precio_u %<>% as.numeric()
+precio_lote_ingredientes$dimension_lote %<>% as.numeric()
+precio_lote_ingredientes$cantidad %<>% as.numeric()
+
 precio_lote_ingredientes$precio <- precio_lote_ingredientes$cantidad * precio_lote_ingredientes$dimension_lote * precio_lote_ingredientes$precio_u
 
 # calculando el precio total de los ingredientes de cada lote
 precio_lote_ingredientes <- aggregate(precio ~ lote + receta + dimension_lote + categoria, FUN = sum, data = precio_lote_ingredientes)
 
-# empaque y otros
+# empaque
 precio_lote_empaque <- precio_articulos_bitacora[!precio_articulos_bitacora$categoria == "ingrediente", ]
 precio_lote_empaque$precio_u %<>% as.numeric()
+precio_lote_empaque$cantidad_productos %<>% as.numeric()
+precio_lote_empaque$cantidad %<>% as.numeric()
+
 precio_lote_empaque$precio <- precio_lote_empaque$cantidad * precio_lote_empaque$cantidad_productos * precio_lote_empaque$precio_u
 
 # calculando el precio total de los empaques de cada lote
 precio_lote_empaque <- aggregate(precio ~ lote + receta + dimension_lote + categoria, FUN = sum, data = precio_lote_empaque)
 
-# uniendo el precio de los ingredientes con los empaques y otros
+# uniendo el precio de los ingredientes con los empaques
 precio_lote <- precio_lote_ingredientes %<>% rbind(precio_lote_empaque)
-precio_lote <- aggregate(precio ~ lote + receta + dimension_lote + categoria, FUN = sum, data = precio_lote)
+precio_lote <- aggregate(precio ~ lote + receta + dimension_lote, FUN = sum, data = precio_lote)
 
 as.data.frame(precio_lote)
 
@@ -108,6 +117,10 @@ saveRDS(precio_lote,
 Cuadro 2. Articulos disponibles.
 ```{r articulos disponibles, echo=FALSE, message=FALSE, warning=FALSE}
 # generando base articulos_disponibles
+# llamando base de articulos_disponibles 
+# process_locale <- "data/process/"
+# articulos <- readRDS(paste0(process_locale, "articulos_disponibles.rds"))
+
 # filtrando los agotados
 articulos_disponibles <- articulos[!articulos$estado == "agotado",]
 
@@ -117,12 +130,20 @@ articulos_disponibles <- aggregate(cantidad ~ articulo, FUN = sum, data = articu
 # sumando todo lo usado en la bitacora
 # ingredientes
 precio_ingredientes_bitacora <- precio_articulos_bitacora[precio_articulos_bitacora$categoria == "ingrediente",]
+
+precio_ingredientes_bitacora$cantidad %<>% as.numeric()
+precio_ingredientes_bitacora$dimension_lote %<>% as.numeric()
+
 precio_ingredientes_bitacora$cantidad_gastada <- precio_ingredientes_bitacora$cantidad * precio_ingredientes_bitacora$dimension_lote
 
 ingredientes_gastados <- aggregate(cantidad_gastada ~ articulo + categoria, FUN = sum, data = precio_ingredientes_bitacora)
 
 # empaque
 precio_empaque_bitacora <- precio_articulos_bitacora[!precio_articulos_bitacora$categoria == "ingrediente", ]
+
+precio_empaque_bitacora$cantidad %<>% as.numeric()
+precio_empaque_bitacora$cantidad_productos %<>% as.numeric()
+
 precio_empaque_bitacora$cantidad_gastada <- precio_empaque_bitacora$cantidad * precio_empaque_bitacora$cantidad_productos
 
 empaques_gastados <- aggregate(cantidad_gastada ~ articulo + categoria, FUN = sum, data = precio_empaque_bitacora)
@@ -135,5 +156,14 @@ articulos_disponibles <- articulos_gastados %>% left_join(articulos_disponibles)
 articulos_disponibles$cantidad_disponible <- articulos_disponibles$cantidad - articulos_disponibles$cantidad_gastada
 
 as.data.frame(articulos_disponibles)
+
+
+
+## guardando datos procesados
+save_locale <- "data/process/"
+
+# save to file
+saveRDS(articulos_disponibles,
+     file = paste0(save_locale, "articulos_disponibles.rds"))
 ```
 
